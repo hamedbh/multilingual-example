@@ -1,0 +1,12 @@
+# local package
+-e .
+
+# external requirements
+black[jupyter]
+click
+flake8
+ipykernel
+nbstripout
+pre-commit
+pytest
+python-dotenv

@@ -1,0 +1,9 @@
+# This gitignore file will ignore any data file but preserve the directory 
+# structure.
+
+## Ignore all files in following subfolders e.g. data/raw/bigfile.csv
+raw/**
+interim/**
+processed/**
+## But keep the subfolders e.g. data/raw/
+!**/.gitkeep
