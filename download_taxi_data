@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Script using curl to download yellow taxi data from NYC Taxi and Limousine Commission
+# Usage: bash taxi_download <output_path>
+if [ "$#" -ne 1 ]; then
+    echo "Illegal number of parameters"
+    echo "Usage: bash taxi_download <output_path>"
+    exit 1
+fi
+
+output_path=$1
+month_dir=$(dirname "$output_path")
+year_dir=$(dirname "$month_dir")
+output_dir=$(dirname "$year_dir")
+
+# Create directories if they don't exist
+mkdir -p $month_dir
+
+month=$(basename "$month_dir" | grep -oP '\d{1,2}')
+month_padded=$(printf "%02d" $month)
+year=$(basename "$year_dir" | grep -oP '\d{4}')
+url="https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_$year-$month_padded.parquet"
+echo "Downloading $url to $output_path"
+
+curl -o $output_path $url --progress-bar

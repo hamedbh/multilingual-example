@@ -1,7 +1,7 @@
 .PHONY: all data clean lint format requirements environment test help
 
 ## Build the whole pipeline
-all: data test clean lint requirements 
+all: test clean lint requirements data
 
 PROJECT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 PROJECT_NAME = test-copilot
@@ -24,11 +24,25 @@ PYTHON_INTERPRETER = python3
 # The comment after the double `##` becomes the description of the target when
 # running `make` or `make help` at the command line.
 
-## Make datasets
-data: data/dataset.csv 
+# Base URL
+BASE_TAXI_URL = https://d37ci6vzurychx.cloudfront.net/trip-data
 
-data/dataset.csv: requirements
-	$(PYTHON_INTERPRETER) src/data/make_dataset.py
+# Years and months for which to download data
+YEARS = $(shell seq 2018 2021)
+MONTHS = $(shell seq 1 12)
+
+# Directory to store downloaded files
+TAXI_DATA_DIR = data/raw/nyc_taxi
+
+# List of all .parquet files to download
+PARQUET_FILES = $(foreach year,$(YEARS),$(foreach month,$(MONTHS),$(TAXI_DATA_DIR)/year=$(year)/month=$(month)/part-0.parquet))
+
+# Rule to download a .parquet file
+$(PARQUET_FILES):
+	./download_taxi_data $@
+
+## Make datasets
+data: requirements $(PARQUET_FILES)
 
 ## Delete all compiled Python files
 clean:
@@ -37,7 +51,7 @@ clean:
 
 ## Lint using flake8
 lint:
-	flake8 .
+	flake8 src
 	black --check .
 
 ## Format source code with black
@@ -48,7 +62,8 @@ format:
 requirements:
 	$(PYTHON_INTERPRETER) -m pip install -U pip setuptools wheel
 	$(PYTHON_INTERPRETER) -m pip install -r requirements.txt
-	$(PYTHON_INTERPRETER) -m ipykernel install --user --name=$(PROJECT_NAME) 
+	$(PYTHON_INTERPRETER) -m ipykernel install --user --name=$(PROJECT_NAME)
+	Rscript -e "renv::restore(prompt = FALSE)"
 
 ## Set up the Python environment
 environment:

@@ -90,3 +90,6 @@ scratch.py
 
 # Mypy cache
 .mypy_cache/
+scratch.qmd
+.Rproj.user
+.Rhistory
