@@ -28,7 +28,7 @@ PYTHON_INTERPRETER = python3
 report: outputs/taxi_report.html
 
 outputs/taxi_report.html: data
-	Rscript -e "print(getwd()); rmarkdown::render('notebooks/taxi_report.Rmd', output_file = '../$@')"
+	Rscript -e "rmarkdown::render('notebooks/taxi_report.Rmd', output_file = '../$@')"
 ## Make datasets
 data: requirements $(PARQUET_FILES) data/processed/weekly_summary.csv data/processed/time_of_day_summary.csv
 

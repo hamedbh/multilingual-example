@@ -24,29 +24,30 @@ def summarise_time_of_day(parquet_dir, output_path):
         )
         """
     ).render(raw_data_dir=parquet_dir)
-
+    write_csv_sql = Template(
+        """
+        COPY (
+          SELECT
+            year,
+            month,
+            hour(tpep_pickup_datetime) AS hour,
+            COUNT(*) AS trips,
+            AVG(total_amount) AS avg_cost
+          FROM all_taxi
+          WHERE
+            year = year(tpep_pickup_datetime) AND
+            month = month(tpep_pickup_datetime)
+          GROUP BY ALL
+          ORDER BY ALL
+        ) TO '{{ output_path }}' (FORMAT CSV, HEADER)
+        """
+    ).render(output_path=output_path)
     logger.info("Summarising taxi data by time of day")
     with duckdb.connect() as duck:
         duck.execute(create_view_sql)
-        time_of_day_summary = duck.sql(
-            """
-            SELECT
-              year,
-              month,
-              hour(tpep_pickup_datetime) AS hour,
-              COUNT(*) AS trips,
-              AVG(total_amount) AS avg_cost
-            FROM all_taxi
-            WHERE
-              year = year(tpep_pickup_datetime) AND
-              month = month(tpep_pickup_datetime)
-            GROUP BY ALL
-            ORDER BY ALL
-            """
-        ).pl()
+        duck.execute(write_csv_sql)
 
-    logger.info(f"Writing weekly summary to {output_path}")
-    time_of_day_summary.write_csv(output_path)
+    logger.info(f"Written time of day summary to {output_path}")
 
 
 if __name__ == "__main__":
