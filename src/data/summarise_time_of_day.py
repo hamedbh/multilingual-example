@@ -32,10 +32,14 @@ def summarise_time_of_day(parquet_dir, output_path):
             """
             SELECT
               year,
+              month,
               hour(tpep_pickup_datetime) AS hour,
               COUNT(*) AS trips,
               AVG(total_amount) AS avg_cost
             FROM all_taxi
+            WHERE
+              year = year(tpep_pickup_datetime) AND
+              month = month(tpep_pickup_datetime)
             GROUP BY ALL
             ORDER BY ALL
             """

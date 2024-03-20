@@ -35,9 +35,11 @@ def summarise_weekly(parquet_dir, output_path):
             SELECT
               year,
               week(tpep_pickup_datetime) AS week,
+              MIN(tpep_pickup_datetime)::date AS week_start,
               count(*) as trips,
               AVG(total_amount) AS avg_cost
             FROM all_taxi
+            WHERE year = year(tpep_pickup_datetime)
             GROUP BY ALL
             ORDER BY ALL
             """

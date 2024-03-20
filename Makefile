@@ -1,7 +1,7 @@
 .PHONY: all data clean lint format requirements environment test help
 
 ## Build the whole pipeline
-all: test clean lint requirements data
+all: test clean lint requirements data report
 
 PROJECT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 PROJECT_NAME = test-copilot
@@ -24,6 +24,11 @@ PYTHON_INTERPRETER = python3
 # The comment after the double `##` becomes the description of the target when
 # running `make` or `make help` at the command line.
 
+## Render the report
+report: outputs/taxi_report.html
+
+outputs/taxi_report.html: data
+	Rscript -e "print(getwd()); rmarkdown::render('notebooks/taxi_report.Rmd', output_file = '../$@')"
 ## Make datasets
 data: requirements $(PARQUET_FILES) data/processed/weekly_summary.csv data/processed/time_of_day_summary.csv
 
@@ -31,7 +36,7 @@ data: requirements $(PARQUET_FILES) data/processed/weekly_summary.csv data/proce
 BASE_TAXI_URL = https://d37ci6vzurychx.cloudfront.net/trip-data
 
 # Years and months for which to download data
-YEARS = $(shell seq 2018 2021)
+YEARS = $(shell seq 2018 2022)
 MONTHS = $(shell seq 1 12)
 
 # Directory to store downloaded files
