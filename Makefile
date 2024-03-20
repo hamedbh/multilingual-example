@@ -25,7 +25,7 @@ PYTHON_INTERPRETER = python3
 # running `make` or `make help` at the command line.
 
 ## Make datasets
-data: requirements $(PARQUET_FILES) data/processed/weekly_summary.csv
+data: requirements $(PARQUET_FILES) data/processed/weekly_summary.csv data/processed/time_of_day_summary.csv
 
 # Base URL
 BASE_TAXI_URL = https://d37ci6vzurychx.cloudfront.net/trip-data
@@ -46,6 +46,9 @@ $(PARQUET_FILES):
 
 data/processed/weekly_summary.csv: $(PARQUET_FILES)
 	$(PYTHON_INTERPRETER) src/data/summarise_weekly.py data/raw/nyc_taxi $@
+
+data/processed/time_of_day_summary.csv: $(PARQUET_FILES)
+	$(PYTHON_INTERPRETER) src/data/summarise_time_of_day.py data/raw/nyc_taxi $@
 
 ## Delete all compiled Python files
 clean:

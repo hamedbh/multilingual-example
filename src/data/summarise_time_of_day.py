@@ -10,12 +10,10 @@ from jinja2 import Template
 @click.command()
 @click.argument("parquet_dir", type=click.Path(exists=True))
 @click.argument("output_path", type=click.Path())
-def summarise_weekly(parquet_dir, output_path):
-    """
-    Function to summarise the taxi data by week"""
+def summarise_time_of_day(parquet_dir, output_path):
+    """Function to summarise the taxi data by time of day"""
 
     logger = logging.getLogger(__name__)
-
     create_view_sql = Template(
         """
         CREATE VIEW all_taxi AS
@@ -27,15 +25,15 @@ def summarise_weekly(parquet_dir, output_path):
         """
     ).render(raw_data_dir=parquet_dir)
 
-    logger.info("Summarising taxi data by week")
+    logger.info("Summarising taxi data by time of day")
     with duckdb.connect() as duck:
         duck.execute(create_view_sql)
-        weekly_summary = duck.sql(
+        time_of_day_summary = duck.sql(
             """
             SELECT
               year,
-              week(tpep_pickup_datetime) AS week,
-              count(*) as trips,
+              hour(tpep_pickup_datetime) AS hour,
+              COUNT(*) AS trips,
               AVG(total_amount) AS avg_cost
             FROM all_taxi
             GROUP BY ALL
@@ -44,7 +42,7 @@ def summarise_weekly(parquet_dir, output_path):
         ).pl()
 
     logger.info(f"Writing weekly summary to {output_path}")
-    weekly_summary.write_csv(output_path)
+    time_of_day_summary.write_csv(output_path)
 
 
 if __name__ == "__main__":
@@ -58,4 +56,4 @@ if __name__ == "__main__":
     # load up the .env entries as environment variables
     load_dotenv(find_dotenv())
 
-    summarise_weekly()
+    summarise_time_of_day()

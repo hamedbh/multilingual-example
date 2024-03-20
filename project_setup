@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/usr/bin/env bash
 # Purpose: A shell script to set up the project in one command
 # Usage: . setup.sh
 
