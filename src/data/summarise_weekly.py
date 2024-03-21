@@ -5,6 +5,7 @@ from pathlib import Path
 from dotenv import find_dotenv, load_dotenv
 import duckdb
 from jinja2 import Template
+from src.data.create_taxi_view import create_taxi_view
 
 
 @click.command()
@@ -16,16 +17,6 @@ def summarise_weekly(parquet_dir, output_path):
 
     logger = logging.getLogger(__name__)
 
-    create_view_sql = Template(
-        """
-        CREATE VIEW all_taxi AS
-        SELECT *
-        FROM read_parquet(
-            '{{ raw_data_dir }}/**/*.parquet',
-            hive_partitioning=true
-        )
-        """
-    ).render(raw_data_dir=parquet_dir)
     write_csv_sql = Template(
         """
         COPY (
@@ -44,7 +35,7 @@ def summarise_weekly(parquet_dir, output_path):
     ).render(output_path=output_path)
     logger.info("Summarising taxi data by week")
     with duckdb.connect() as duck:
-        duck.execute(create_view_sql)
+        create_taxi_view(duck, parquet_dir, "all_taxi")
         duck.execute(write_csv_sql)
 
     logger.info(f"Written weekly summary to {output_path}")

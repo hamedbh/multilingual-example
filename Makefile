@@ -51,10 +51,10 @@ $(PARQUET_FILES):
 	./download_taxi_data $@
 
 data/processed/weekly_summary.csv: $(PARQUET_FILES)
-	$(PYTHON_INTERPRETER) src/data/summarise_weekly.py data/raw/nyc_taxi $@
+	$(PYTHON_INTERPRETER) -m src.data.summarise_weekly data/raw/nyc_taxi $@
 
 data/processed/time_of_day_summary.csv: $(PARQUET_FILES)
-	$(PYTHON_INTERPRETER) src/data/summarise_time_of_day.py data/raw/nyc_taxi $@
+	$(PYTHON_INTERPRETER) -m src.data.summarise_time_of_day data/raw/nyc_taxi $@
 
 ## Delete all compiled Python files
 clean:
