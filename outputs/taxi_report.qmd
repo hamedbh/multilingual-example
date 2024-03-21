@@ -1,14 +1,14 @@
 ---
-title: "Sample Taxi Report"
-author: "Hamed Bastan-Hagh"
-output: 
-  html_document: 
-    highlight: textmate
-    theme: united
+title: "Taxi report"
+author: "Hamed"
+format: 
+  html:
+    theme: flatly
+    highlight-style: github
 ---
 
-```{r setup}
-knitr::opts_chunk$set(echo = TRUE)
+```{r}
+#| label: setup
 library(data.table)
 library(ggplot2)
 theme_set(theme_light())
@@ -16,14 +16,16 @@ theme_set(theme_light())
 
 This is a simple report for demo purposes. The data wrangling has mostly been done in Python, here we read in those data and generate some plots.
 
-```{r load-data}
+```{r}
+#| label: load-data
 d_weekly <- fread(here::here("data/processed/weekly_summary.csv"))
 d_hourly <- fread(here::here("data/processed/time_of_day_summary.csv"))
 ```
 
 We can view some trends over time, for example the average cost of a yellow taxi ride over the period.
 
-```{r cost-weekly}
+```{r}
+#| label: cost-weekly
 d_weekly |> 
   ggplot(aes(week_start, avg_cost)) + 
   geom_smooth(
@@ -46,7 +48,8 @@ d_weekly |>
 
 The sharp dip in 2020 hints at Covid, which we can see much more clearly in the trip count.
 
-```{r trips-weekly}
+```{r}
+#| label: trips-weekly
 d_weekly |> 
   ggplot(aes(week_start, trips)) + 
   geom_smooth(
@@ -71,7 +74,8 @@ Not only is there a sharp dip in 2020, but over time there are far fewer yellow 
 
 We can also consider patterns by the time of day: how do average fares differ at different times of day?
 
-```{r cost-hourly}
+```{r}
+#| label: cost-hourly
 d_hourly[
   ,
   .(avg_cost = weighted.mean(avg_cost, trips)),
@@ -98,7 +102,8 @@ d_hourly[
   )
 ```
 
-```{r trips-hourly}
+```{r}
+#| label: trips-hourly
 d_hourly[
   ,
   .(trips = sum(trips) / 1e6),
