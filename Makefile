@@ -1,4 +1,4 @@
-.PHONY: all data clean lint format requirements environment test help
+.PHONY: all data report clean lint format requirements environment test help
 
 ## Build the whole pipeline
 all: test clean lint requirements data report
@@ -29,9 +29,6 @@ report: outputs/taxi_report.html
 
 outputs/taxi_report.html: data _quarto.yml taxi_report.qmd
 	quarto render taxi_report.qmd
-
-_quarto.yml: ;
-taxi_report.qmd: ;
 
 ## Make datasets
 data: requirements $(PARQUET_FILES) data/processed/weekly_summary.csv data/processed/time_of_day_summary.csv
