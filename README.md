@@ -36,7 +36,13 @@ Running that script should just be a one-off step. In future when you return you
 source ./.venv/bin/activate
 ```
 
-Running the entire analysis _should_ then be as simple as `make all`. Note that this will download five years' data, which is over 4GB. If you want to narrow the scope change the `YEARS` variable in the Makefile.
+Running the entire analysis _should_ then be as simple as `make all`. Note that this will download five years' data, which is over 4GB. If you want to narrow the scope change the `YEARS` variable in the Makefile. For reference, running `make all` for me for the five years' data completes in c. 3 minutes:
+
+```
+real	2m47.080s
+user	2m9.803s
+sys	0m11.769s
+```
 
 ## Environment variables
 
