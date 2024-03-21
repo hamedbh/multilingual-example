@@ -27,8 +27,11 @@ PYTHON_INTERPRETER = python3
 ## Render the report
 report: outputs/taxi_report.html
 
-outputs/taxi_report.html: data outputs/taxi_report.qmd
-	quarto render outputs/taxi_report.qmd --to html
+outputs/taxi_report.html: data _quarto.yml taxi_report.qmd
+	quarto render taxi_report.qmd
+
+_quarto.yml: ;
+taxi_report.qmd: ;
 
 ## Make datasets
 data: requirements $(PARQUET_FILES) data/processed/weekly_summary.csv data/processed/time_of_day_summary.csv

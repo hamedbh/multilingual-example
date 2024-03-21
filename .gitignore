@@ -93,3 +93,5 @@ scratch.py
 scratch.qmd
 .Rproj.user
 .Rhistory
+
+/.quarto/
